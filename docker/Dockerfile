@@ -48,4 +48,8 @@ RUN ${ZYPP} install supervisor
 COPY supervisord.conf /etc/supervisord.conf
 RUN chmod 644 /etc/supervisord.conf
 
+# Netlify cli
+RUN ${ZYPP} install npm
+RUN npm install -g netlify-cli
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

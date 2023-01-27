@@ -5,9 +5,8 @@ services:
       image: github-runner-hugo:latest
       environment:
         RUNNER_NAME: "github-runner-hugo"
-        RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
+        # RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
         RUNNER_ORGANIZATION_URL: ${RUNNER_ORGANIZATION_URL}
         GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
-        RUNNER_TOKEN: ${RUNNER_TOKEN}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock

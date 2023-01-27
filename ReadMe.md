@@ -82,3 +82,42 @@ Started running service
 Current runner version: '2.301.1'
 Listening for Jobs
 ```
+
+## Example workflow for building a site with Hugo and deploy on Netlify
+
+This file must be in folder `.github/workflows` in your Hugo site repository. It can be called anything. In my repo I call it `build-site.yml`.
+
+Your Netlify Personal Access Token (PAT) must be stored in the secrets section of your GitHub repository with name `NETLIFY_AUTH_TOKEN`.
+
+```yml
+name: Build Hugo Site
+run-name: Building site from commit ${{ github.sha }} pushed by ${{ github.actor }}.
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+env:
+  # Netlify Site ID
+  NETLIFY_SITE_ID: 010185f3-aaaa-bbbb-cccc-dddddddddddd
+
+jobs:
+  Build-Hugo-Site:
+    runs-on: self-hosted
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - run: hugo --minify --gc --cleanDestinationDir --destination public
+      - run: netlify deploy --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --prod --dir public/
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+```
+
+This workflow will only trigger when pushed to `main`. Any other branch will not trigger a build and deploy. This enables having multiple development-branches for unfinished features and stories for your site.
