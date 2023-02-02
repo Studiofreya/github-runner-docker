@@ -33,16 +33,6 @@ RUN ${ZYPP} install hugo
 RUN mkdir -p /home/runner ${AGENT_TOOLSDIRECTORY}
 WORKDIR /home/runner
 
-RUN GH_RUNNER_VERSION=${GH_RUNNER_VERSION:-$(curl --silent "https://api.github.com/repos/actions/runner/releases/latest" | grep tag_name | sed -E 's/.*"v([^"]+)".*/\1/')} \
-    && curl -L -O https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz \
-    && tar -zxf actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz
-RUN rm -f actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz
-
-RUN chown -R root: /home/runner
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-
 # Supervisor
 RUN ${ZYPP} install supervisor
 COPY supervisord.conf /etc/supervisord.conf
@@ -52,4 +42,16 @@ RUN chmod 644 /etc/supervisord.conf
 RUN ${ZYPP} install npm
 RUN npm install -g netlify-cli
 
+RUN GH_RUNNER_VERSION=${GH_RUNNER_VERSION:-$(curl --silent "https://api.github.com/repos/actions/runner/releases/latest" | grep tag_name | sed -E 's/.*"v([^"]+)".*/\1/')} \
+    && curl -L -O https://github.com/actions/runner/releases/download/v${GH_RUNNER_VERSION}/actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz \
+    && tar -zxf actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz
+RUN rm -f actions-runner-linux-x64-${GH_RUNNER_VERSION}.tar.gz
+RUN chown -R root: /home/runner
+
+# Entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Start supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
