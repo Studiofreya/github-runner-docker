@@ -16,19 +16,19 @@ RUN ${ZYPP} ref
 # Required libraries and tools
 RUN ${ZYPP} install tar gzip zip unzip autoconf automake dh-autoreconf libtool findutils bison ninja
 RUN ${ZYPP} install icu ca-certificates lsb-release
-RUN ${ZYPP} install libstdc++6 libstdc++-devel
+# RUN ${ZYPP} install libstdc++ libstdc++-devel
 
 # Build tools
-RUN ${ZYPP} install clang gcc gcc-c++ screen bash screen vim
-RUN ${ZYPP} install git curl cmake jq
+# RUN ${ZYPP} install clang gcc gcc-c++
+RUN ${ZYPP} install git curl cmake jq bash screen vim
 
 # Powershell - https://github.com/PowerShell/PowerShell/releases
 ARG PWSH_URL="https://github.com/PowerShell/PowerShell/releases/download/v7.3.1/powershell-7.3.1-1.rh.x86_64.rpm"
 RUN ${ZYPP} install libicu libopenssl1_1
 RUN rpm -ivh --nodeps ${PWSH_URL}
 
-# Hugo 
-RUN ${ZYPP} install hugo
+# Hugo - docutils -> rst2html
+RUN ${ZYPP} install hugo docutils
 
 RUN mkdir -p /home/runner ${AGENT_TOOLSDIRECTORY}
 WORKDIR /home/runner
